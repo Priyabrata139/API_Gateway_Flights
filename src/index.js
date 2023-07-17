@@ -11,10 +11,6 @@ const limiter = rateLimit({
 	max: 30, // Limit each IP to 2 requests per `window` (here, per 15 minutes)
 });
 
-app.use(express.json());
-app.use(express.urlencoded({extended: true}));
-
-app.use(limiter);
 
 app.use('/flightsService', createProxyMiddleware({ 
     target: ServerConfig.FLIGHT_SERVICE, 
@@ -22,6 +18,10 @@ app.use('/flightsService', createProxyMiddleware({
     pathRewrite: {'^/flightsService' : '/'} 
 }));
 app.use('/bookingService', createProxyMiddleware({ target: ServerConfig.BOOKING_SERVICE, changeOrigin: true }));
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+
+app.use(limiter);
 app.use('/api', apiRoutes);
 
 app.listen(ServerConfig.PORT, async () => {
